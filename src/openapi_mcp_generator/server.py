@@ -1,7 +1,8 @@
 import json
-import yaml  
+import yaml
 import httpx
 from fastmcp import FastMCP
+from .auth import AuthHandler
 
 def load_openapi_spec(file_path):
     """Load OpenAPI spec by trying YAML first, then JSON."""
@@ -12,15 +13,16 @@ def load_openapi_spec(file_path):
             f.seek(0)  # Reset file pointer
             return json.load(f)  # Fallback to JSON
 
-def create_and_run_mcp_server(openapi_spec_path, host="0.0.0.0", port=8000, name="Generated MCP Server", base_url=None):
+def create_and_run_mcp_server(openapi_spec_path, host="0.0.0.0", port=8000, name="Generated MCP Server", base_url=None, auth_type=None, credentials=None):
     """Create and run a FastMCP server from an OpenAPI spec file."""
     openapi_spec = load_openapi_spec(openapi_spec_path)
 
-    # Create client with base_url if provided
-    if base_url:
-        client = httpx.AsyncClient(base_url=base_url)
-    else:
-        client = httpx.AsyncClient()
+    # Handle authentication
+    auth_handler = AuthHandler(auth_type, credentials)
+    auth = auth_handler.get_auth()
+
+    # Create client with base_url and auth if provided
+    client = httpx.AsyncClient(base_url=base_url, auth=auth)
 
     mcp_server = FastMCP.from_openapi(
         openapi_spec=openapi_spec,
