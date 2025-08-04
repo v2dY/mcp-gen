@@ -3,5 +3,6 @@
 A tool to generate MCP (Model Context Protocol) servers from OpenAPI specifications.
 """
 
-__version__ = "0.1.0"
+from ._version import __version__
+
 # __author__ = "Your Name"

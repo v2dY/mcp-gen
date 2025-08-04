@@ -4,14 +4,22 @@ import os
 import yaml
 from pathlib import Path
 from typing import Optional
+import importlib.metadata
 
 import click
 
 from .server import create_and_run_mcp_server
 from .auth import AuthHandler
 
+def get_version():
+    """Get version from package metadata."""
+    try:
+        return importlib.metadata.version("openapi-mcp-generator")
+    except importlib.metadata.PackageNotFoundError:
+        return "unknown"
+
 @click.group()
-@click.version_option(version="0.1.0")
+@click.version_option(version=get_version())
 def cli():
     """OpenAPI to MCP Generator.
     
