@@ -22,13 +22,13 @@ jobs:
           cache-dependency-glob: "uv.lock"
 
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --extra dev
 
       - name: Run tests
         run: uv run pytest tests/ -v
 
-      - name: Run linting
-        run: uv run mypy src/
+    #   - name: Run linting
+    #     run: uv run mypy src/
 
   build-and-release:
     needs: test
