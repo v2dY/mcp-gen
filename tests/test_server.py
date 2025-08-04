@@ -3,7 +3,7 @@ import json
 import yaml
 from unittest.mock import patch, mock_open, Mock
 from pathlib import Path
-from src.openapi_mcp_generator.server import load_openapi_spec, create_and_run_mcp_server
+from src.openapi_mcp_gen.server import load_openapi_spec, create_and_run_mcp_server
 
 
 class TestServer:
@@ -45,9 +45,9 @@ class TestServer:
         assert spec["openapi"] == "3.0.0"
         assert spec["info"]["title"] == "Test API"
 
-    @patch('src.openapi_mcp_generator.server.FastMCP')
-    @patch('src.openapi_mcp_generator.server.httpx')
-    @patch('src.openapi_mcp_generator.server.load_openapi_spec')
+    @patch('src.openapi_mcp_gen.server.FastMCP')
+    @patch('src.openapi_mcp_gen.server.httpx')
+    @patch('src.openapi_mcp_gen.server.load_openapi_spec')
     def test_create_and_run_mcp_server_basic(self, mock_load_spec, mock_httpx, mock_fastmcp):
         """Test basic MCP server creation without authentication."""
         mock_spec = {"openapi": "3.0.0", "info": {"title": "Test"}}
@@ -77,10 +77,10 @@ class TestServer:
         # Verify server was started
         mock_server.run.assert_called_once_with(transport="http", host="0.0.0.0", port=8000)
 
-    @patch('src.openapi_mcp_generator.server.FastMCP')
-    @patch('src.openapi_mcp_generator.server.httpx')
-    @patch('src.openapi_mcp_generator.server.load_openapi_spec')
-    @patch('src.openapi_mcp_generator.server.AuthHandler')
+    @patch('src.openapi_mcp_gen.server.FastMCP')
+    @patch('src.openapi_mcp_gen.server.httpx')
+    @patch('src.openapi_mcp_gen.server.load_openapi_spec')
+    @patch('src.openapi_mcp_gen.server.AuthHandler')
     def test_create_and_run_mcp_server_with_auth(self, mock_auth_handler, mock_load_spec, mock_httpx, mock_fastmcp):
         """Test MCP server creation with authentication."""
         mock_spec = {"openapi": "3.0.0", "info": {"title": "Test"}}
@@ -110,9 +110,9 @@ class TestServer:
         # Verify client was created with auth
         mock_httpx.AsyncClient.assert_called_once_with(base_url=None, auth=mock_auth)
 
-    @patch('src.openapi_mcp_generator.server.FastMCP')
-    @patch('src.openapi_mcp_generator.server.httpx')
-    @patch('src.openapi_mcp_generator.server.load_openapi_spec')
+    @patch('src.openapi_mcp_gen.server.FastMCP')
+    @patch('src.openapi_mcp_gen.server.httpx')
+    @patch('src.openapi_mcp_gen.server.load_openapi_spec')
     def test_create_and_run_mcp_server_with_base_url(self, mock_load_spec, mock_httpx, mock_fastmcp):
         """Test MCP server creation with base URL."""
         mock_spec = {"openapi": "3.0.0", "info": {"title": "Test"}}
@@ -130,9 +130,9 @@ class TestServer:
         # Verify client was created with base_url
         mock_httpx.AsyncClient.assert_called_once_with(base_url=base_url, auth=None)
 
-    @patch('src.openapi_mcp_generator.server.FastMCP')
-    @patch('src.openapi_mcp_generator.server.httpx')
-    @patch('src.openapi_mcp_generator.server.load_openapi_spec')
+    @patch('src.openapi_mcp_gen.server.FastMCP')
+    @patch('src.openapi_mcp_gen.server.httpx')
+    @patch('src.openapi_mcp_gen.server.load_openapi_spec')
     def test_create_and_run_mcp_server_custom_params(self, mock_load_spec, mock_httpx, mock_fastmcp):
         """Test MCP server creation with custom parameters."""
         mock_spec = {"openapi": "3.0.0", "info": {"title": "Test"}}

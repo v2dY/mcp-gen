@@ -1,5 +1,5 @@
 [project]
-name = "openapi-mcp-generator"
+name = "openapi-mcp-gen"
 version = "0.1.0"
 description = "A tool to generate MCP (Model Context Protocol) servers from OpenAPI specifications"
 authors = [
@@ -31,7 +31,7 @@ dev = [
 ]
 
 [project.scripts]
-openapi-to-mcp = "openapi_mcp_generator.cli:main"
+openapi-to-mcp = "openapi_mcp_gen.cli:main"
 
 [build-system]
 requires = ["hatchling"]

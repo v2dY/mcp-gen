@@ -63,7 +63,7 @@ jobs:
       - name: Update version in _version.py
         run: |
           # Update the version in _version.py to match the tag
-          sed -i 's/^__version__ = .*/__version__ = "${{ steps.version.outputs.version }}"/' src/openapi_mcp_generator/_version.py
+          sed -i 's/^__version__ = .*/__version__ = "${{ steps.version.outputs.version }}"/' src/openapi_mcp_gen/_version.py
 
       - name: Build package
         run: uv build

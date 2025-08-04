@@ -2,7 +2,7 @@ import pytest
 from click.testing import CliRunner
 from unittest.mock import patch, Mock
 from pathlib import Path
-from src.openapi_mcp_generator.cli import cli, generate
+from src.openapi_mcp_gen.cli import cli, generate
 
 
 class TestCLI:
@@ -30,7 +30,7 @@ class TestCLI:
         assert result.exit_code != 0
         assert "Missing option" in result.output
 
-    @patch('src.openapi_mcp_generator.cli.create_and_run_mcp_server')
+    @patch('src.openapi_mcp_gen.cli.create_and_run_mcp_server')
     @patch('pathlib.Path.exists')
     def test_generate_basic_command(self, mock_exists, mock_server):
         """Test basic generate command."""
@@ -44,7 +44,7 @@ class TestCLI:
         assert result.exit_code == 0
         mock_server.assert_called_once()
 
-    @patch('src.openapi_mcp_generator.cli.create_and_run_mcp_server')
+    @patch('src.openapi_mcp_gen.cli.create_and_run_mcp_server')
     @patch('pathlib.Path.exists')
     def test_generate_with_basic_auth(self, mock_exists, mock_server):
         """Test generate command with basic authentication."""
@@ -64,7 +64,7 @@ class TestCLI:
         assert kwargs['auth_type'] == 'basic'
         assert kwargs['credentials'] == ('user', 'pass')
 
-    @patch('src.openapi_mcp_generator.cli.create_and_run_mcp_server')
+    @patch('src.openapi_mcp_gen.cli.create_and_run_mcp_server')
     @patch('pathlib.Path.exists')
     def test_generate_with_bearer_auth(self, mock_exists, mock_server):
         """Test generate command with bearer authentication."""
@@ -82,7 +82,7 @@ class TestCLI:
         assert kwargs['auth_type'] == 'bearer'
         assert kwargs['credentials'] == 'test-token'
 
-    @patch('src.openapi_mcp_generator.cli.create_and_run_mcp_server')
+    @patch('src.openapi_mcp_gen.cli.create_and_run_mcp_server')
     @patch('pathlib.Path.exists')
     def test_generate_with_api_key_auth(self, mock_exists, mock_server):
         """Test generate command with API key authentication."""
@@ -102,7 +102,7 @@ class TestCLI:
         assert kwargs['auth_type'] == 'api_key'
         assert kwargs['credentials'] == ('header', 'X-API-Key', 'test-key')
 
-    @patch('src.openapi_mcp_generator.cli.create_and_run_mcp_server')
+    @patch('src.openapi_mcp_gen.cli.create_and_run_mcp_server')
     @patch('pathlib.Path.exists')
     def test_generate_with_oauth2_auth(self, mock_exists, mock_server):
         """Test generate command with OAuth2 authentication."""
@@ -192,7 +192,7 @@ class TestCLI:
         assert result.exit_code == 0  # Function returns early but doesn't raise exception
         assert "Error: Input file not found" in result.output
 
-    @patch('src.openapi_mcp_generator.cli.create_and_run_mcp_server')
+    @patch('src.openapi_mcp_gen.cli.create_and_run_mcp_server')
     @patch('pathlib.Path.exists')
     def test_generate_with_all_options(self, mock_exists, mock_server):
         """Test generate command with all available options."""

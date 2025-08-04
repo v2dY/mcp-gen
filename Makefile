@@ -18,7 +18,7 @@ test:
 
 test-coverage:
 	@echo "📊 Running tests with coverage report..."
-	uv run pytest tests/ --cov=src/openapi_mcp_generator --cov-report=html --cov-report=term
+	uv run pytest tests/ --cov=src/openapi_mcp_gen --cov-report=html --cov-report=term
 
 # Development targets
 install:

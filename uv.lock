@@ -780,7 +780,7 @@ wheels = [
 ]
 
 [[package]]
-name = "openapi-mcp-generator"
+name = "openapi-mcp-gen"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

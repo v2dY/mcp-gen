@@ -14,7 +14,7 @@ from .auth import AuthHandler
 def get_version():
     """Get version from package metadata."""
     try:
-        return importlib.metadata.version("openapi-mcp-generator")
+        return importlib.metadata.version("openapi-mcp-gen")
     except importlib.metadata.PackageNotFoundError:
         return "unknown"
 

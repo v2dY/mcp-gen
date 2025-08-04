@@ -1,7 +1,7 @@
 import pytest
 import httpx
 from unittest.mock import Mock, patch, AsyncMock
-from src.openapi_mcp_generator.auth import AuthHandler
+from src.openapi_mcp_gen.auth import AuthHandler
 
 
 class TestAuthHandler:

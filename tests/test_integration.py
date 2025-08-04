@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from unittest.mock import patch
 from click.testing import CliRunner
-from src.openapi_mcp_generator.cli import cli
+from src.openapi_mcp_gen.cli import cli
 
 
 class TestIntegration:
@@ -58,8 +58,8 @@ class TestIntegration:
         temp_file.close()
         return temp_file.name
 
-    @patch('src.openapi_mcp_generator.server.FastMCP')
-    @patch('src.openapi_mcp_generator.server.httpx')
+    @patch('src.openapi_mcp_gen.server.FastMCP')
+    @patch('src.openapi_mcp_gen.server.httpx')
     def test_integration_basic_auth_flow(self, mock_httpx, mock_fastmcp):
         """Test complete flow with basic authentication."""
         # Create temporary OpenAPI file
@@ -93,8 +93,8 @@ class TestIntegration:
         finally:
             os.unlink(temp_file)
 
-    @patch('src.openapi_mcp_generator.server.FastMCP')
-    @patch('src.openapi_mcp_generator.server.httpx')
+    @patch('src.openapi_mcp_gen.server.FastMCP')
+    @patch('src.openapi_mcp_gen.server.httpx')
     def test_integration_bearer_auth_flow(self, mock_httpx, mock_fastmcp):
         """Test complete flow with bearer authentication."""
         temp_file = self.create_temp_openapi_file(self.sample_openapi)
@@ -118,8 +118,8 @@ class TestIntegration:
         finally:
             os.unlink(temp_file)
 
-    @patch('src.openapi_mcp_generator.server.FastMCP')
-    @patch('src.openapi_mcp_generator.server.httpx')
+    @patch('src.openapi_mcp_gen.server.FastMCP')
+    @patch('src.openapi_mcp_gen.server.httpx')
     def test_integration_api_key_auth_flow(self, mock_httpx, mock_fastmcp):
         """Test complete flow with API key authentication."""
         temp_file = self.create_temp_openapi_file(self.sample_openapi)
@@ -165,8 +165,8 @@ class TestIntegration:
         temp_file = self.create_temp_openapi_file(self.sample_openapi)
         
         try:
-            with patch('src.openapi_mcp_generator.server.FastMCP') as mock_fastmcp:
-                with patch('src.openapi_mcp_generator.server.httpx') as mock_httpx:
+            with patch('src.openapi_mcp_gen.server.FastMCP') as mock_fastmcp:
+                with patch('src.openapi_mcp_gen.server.httpx') as mock_httpx:
                     result = self.runner.invoke(cli, [
                         'generate',
                         '--path', temp_file
@@ -185,7 +185,7 @@ class TestIntegration:
 
     def test_auth_handler_integration(self):
         """Test AuthHandler integration with different auth types."""
-        from src.openapi_mcp_generator.auth import AuthHandler
+        from src.openapi_mcp_gen.auth import AuthHandler
         import httpx
         
         # Test basic auth
