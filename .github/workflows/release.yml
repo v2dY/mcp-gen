@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write  # Required to create releases
+  packages: write  # Required to push to GitHub Container Registry
 
 jobs:
   test:
@@ -33,6 +34,8 @@ jobs:
   build-and-release:
     needs: test
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -88,3 +91,51 @@ jobs:
           name: dist-files
           path: dist/
           retention-days: 30
+
+  build-docker:
+    name: Build and Push Docker Image
+    needs: build-and-release
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_REPO_OWNER: v2dy  # Lowercase repository owner for Docker registry
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-files
+          path: dist/
+
+      - name: Update version in pyproject.toml
+        run: |
+          # Update the version in pyproject.toml to match the tag
+          sed -i 's/^version = .*/version = "${{ needs.build-and-release.outputs.version }}"/' pyproject.toml
+
+      - name: Update version in _version.py
+        run: |
+          # Update the version in _version.py to match the tag
+          sed -i 's/^__version__ = .*/__version__ = "${{ needs.build-and-release.outputs.version }}"/' src/openapi_mcp_gen/_version.py
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ghcr.io/${{ env.DOCKER_REPO_OWNER }}/mcp-gen:${{ needs.build-and-release.outputs.version }}
+            ghcr.io/${{ env.DOCKER_REPO_OWNER }}/mcp-gen:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

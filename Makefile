@@ -1,6 +1,11 @@
 # OpenAPI to MCP Generator Makefile
 # Using uv as package manager
 
+# Docker configuration
+DOCKER_IMAGE_NAME ?= openapi-mcp-gen
+DOCKER_TAG ?= latest
+DOCKER_IMAGE = $(DOCKER_IMAGE_NAME):$(DOCKER_TAG)
+
 .PHONY: run test test-coverage
 # Run targets
 run: 
@@ -9,8 +14,7 @@ run:
 
 example: 
 	@echo "🌟 Running example OpenAPI to MCP conversion..."
-	uv run openapi-to-mcp generate --path examples/openapi.json --host 0.0.0.0 --port 8000 --server-name "Example MCP Server" --base-url "https://api.openaq.org" --auth-type "api_key" --api-key-name "X-API-Key" --api-key-location "header" --api-key-value ${API_KEY}
-
+	uv run openapi-to-mcp generate  --auth-type "api_key" --api-key-name "X-API-Key" --api-key-location "header" --api-key-value "${API_KEY}" --path "https://api.openaq.org/openapi.json" --host 0.0.0.0 --port 8000 --server-name "Example MCP Server" --base-url "https://api.openaq.org"
 # Test targets
 test:
 	@echo "🧪 Running all tests..."
@@ -45,6 +49,20 @@ clean:
 run-inspector:
 	@echo "🔍 Running inspector..."
 	npx @modelcontextprotocol/inspector
+
+# Docker targets
+docker-build:
+	@echo "🐳 Building Docker image $(DOCKER_IMAGE)..."
+	docker build -t $(DOCKER_IMAGE) .
+
+docker-run:
+	@echo "🐳 Running Docker container $(DOCKER_IMAGE)..."
+	docker run --rm -it $(DOCKER_IMAGE)
+
+docker-run-example:
+	@echo "🐳 Running Docker example with mounted volume..."
+	docker run --rm -it -v $(PWD):/workspace:ro $(DOCKER_IMAGE) generate --path /workspace/examples/openapi.json --host 0.0.0.0 --port 3000
+
 help:
 	@echo "📖 Available targets:"
 	@echo "  run              - Run the OpenAPI to MCP generator CLI"
@@ -55,4 +73,13 @@ help:
 	@echo "  format           - Format code with black and isort"
 	@echo "  lint             - Run type checking with mypy"
 	@echo "  clean            - Clean up temporary files"
+	@echo "  run-inspector    - Run MCP inspector"
+	@echo "  docker-build     - Build Docker image"
+	@echo "  docker-run       - Run Docker container"
+	@echo "  docker-run-example - Run Docker container with example"
 	@echo "  help             - Show this help message"
+	@echo ""
+	@echo "📦 Docker variables (can be overridden):"
+	@echo "  DOCKER_IMAGE_NAME - Docker image name (default: openapi-mcp-gen)"
+	@echo "  DOCKER_TAG        - Docker image tag (default: latest)"
+	@echo "  Example: make docker-build DOCKER_TAG=v1.0.0"

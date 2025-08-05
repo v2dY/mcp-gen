@@ -1,44 +1,11 @@
 # OpenAPI MCP Generator
 
-A powerful tool to generate [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) servers from OpenAPI### 🧪 Testing
-
-We have comprehensive test coverage with 38 tests covering all features:
-
-```bash
-# Run all tests
-make test
-
-# Run tests with coverage
-make test-coverage
-```
-
-### 🛠️ Available Make Targets
-
-```bash
-# Development
-make install           # Install dependencies  
-make install-dev       # Install development dependencies
-make format           # Format code with black and isort
-make lint             # Run type checking with mypy
-make clean            # Clean up temporary files
-
-# Running
-make run              # Run the CLI tool
-make example          # Run with example OpenAPI spec
-
-# Testing
-make test             # Run all tests
-make test-verbose     # Run tests with verbose output
-make test-coverage    # Run tests with coverage report
-make test-quick       # Run quick tests (exclude integration)
-
-# Help
-make help             # Show all available targets
-``` comprehensive authentication support.
+A powerful tool to generate [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) servers from OpenAPI specifications with comprehensive authentication support.
 
 ## 🚀 Features
 
 - **OpenAPI 3.0+ Support**: Generate MCP servers from YAML or JSON OpenAPI specifications
+- **File & URL Support**: Load specifications from local files or remote URLs
 - **Authentication Strategies**: Full support for OpenAPI security schemes:
   - 🔐 **Basic Authentication** - Username/password authentication
   - 🎫 **Bearer Token Authentication** - Authorization header with tokens
@@ -47,26 +14,49 @@ make help             # Show all available targets
 - **CLI Interface**: Intuitive command-line interface with comprehensive validation
 - **Configurable Server**: Customizable host, port, and server settings
 - **Type Safety**: Full type hints and validation throughout
-- **Comprehensive Testing**: 38 tests covering all authentication scenarios and functionality
+- **Comprehensive Testing**: 62 tests covering all authentication scenarios and functionality
 
 ## 📦 Installation
 
 ### Using pip
 ```bash
-pip install openapi-mcp-generator
+pip install openapi-mcp-gen
 ```
 
 ### Using uv (recommended for development)
 ```bash
-uv add openapi-mcp-generator
+uv add openapi-mcp-gen
 ```
+
+### Using Docker
+```bash
+# Pull the latest image
+docker pull ghcr.io/v2dy/mcp-gen:latest
+
+# Run with help
+docker run --rm ghcr.io/v2dy/mcp-gen:latest --help
+
+# Run with your OpenAPI spec
+docker run --rm -v $(pwd):/workspace:ro ghcr.io/v2dy/mcp-gen:latest generate \
+  --path /workspace/your-openapi.yaml \
+  --host 0.0.0.0 \
+  --port 3000
+```
+
+Available Docker tags:
+- `latest` - Latest stable release
+- `v1.0.0` - Specific version tags
+- `main` - Latest from main branch
 
 ## 🎯 Usage
 
 ### Quick Start
 ```bash
-# Basic usage without authentication
+# Basic usage without authentication (local file)
 openapi-to-mcp generate --path openapi.yml
+
+# Basic usage with remote URL
+openapi-to-mcp generate --path https://api.example.com/openapi.json
 
 # With custom server settings
 openapi-to-mcp generate --path openapi.yml --host 127.0.0.1 --port 8080 --server-name "My API Server"
@@ -129,7 +119,7 @@ openapi-to-mcp generate \
 
 | Option | Description | Required |
 |--------|-------------|----------|
-| `--path`, `-f` | Path to OpenAPI specification (YAML/JSON) | ✅ |
+| `--path`, `-f` | Path to OpenAPI specification file (YAML/JSON) or URL | ✅ |
 | `--base-url` | Override base URL for API calls | ❌ |
 | `--host` | Host to run MCP server on (default: 0.0.0.0) | ❌ |
 | `--port` | Port to run MCP server on (default: 3000) | ❌ |
@@ -144,16 +134,63 @@ openapi-to-mcp generate \
 
 ### 🎯 Real-world Example
 
-Using the included OpenAQ API example:
+Using the OpenAQ API directly from their public URL:
 ```bash
-# Run the OpenAQ API MCP server with authentication
+# Run the OpenAQ API MCP server without authentication
 openapi-to-mcp generate \
-  --path examples/openapi.json \
+  --path "https://api.openaq.org/openapi.json" \
   --base-url "https://api.openaq.org" \
   --server-name "OpenAQ API Server" \
   --host 127.0.0.1 \
   --port 8080
+
+# Or use the convenience make target
+make example
 ```
+
+## 🐳 Docker Usage
+
+### Quick Start with Docker
+```bash
+# Basic usage with local file
+docker run --rm -v $(pwd):/workspace:ro ghcr.io/v2dy/mcp-gen:latest generate \
+  --path /workspace/openapi.yaml \
+  --host 0.0.0.0 \
+  --port 3000
+
+# Basic usage with remote URL (no volume needed)
+docker run --rm ghcr.io/v2dy/mcp-gen:latest generate \
+  --path https://api.example.com/openapi.json \
+  --host 0.0.0.0 \
+  --port 3000
+```
+
+### Authentication Examples with Docker
+```bash
+# API Key authentication
+docker run --rm -v $(pwd):/workspace:ro \
+  -e API_KEY=your-secret-key \
+  ghcr.io/v2dy/mcp-gen:latest generate \
+  --path /workspace/openapi.yaml \
+  --auth-type api_key \
+  --api-key-name "X-API-Key" \
+  --api-key-location header \
+  --api-key-value "${API_KEY}"
+
+# Basic authentication
+docker run --rm -v $(pwd):/workspace:ro \
+  ghcr.io/v2dy/mcp-gen:latest generate \
+  --path /workspace/openapi.yaml \
+  --auth-type basic \
+  --basic-username myuser \
+  --basic-password mypassword
+```
+
+### Available Docker Tags
+- `ghcr.io/v2dy/mcp-gen:latest` - Latest release
+- `ghcr.io/v2dy/mcp-gen:v1.0.0` - Specific version tags
+
+See [DOCKER.md](DOCKER.md) for comprehensive Docker documentation.
 
 ## 🛠️ Development
 
@@ -164,7 +201,7 @@ git clone <repository-url>
 cd mcp_generator
 
 # Install with development dependencies
-uv install --dev
+uv install
 
 # Or using pip
 pip install -e ".[dev]"
@@ -172,7 +209,7 @@ pip install -e ".[dev]"
 
 ### 🧪 Testing
 
-We have comprehensive test coverage with 38 tests covering all features:
+We have comprehensive test coverage with 62 tests covering all features:
 
 ```bash
 # Run all tests
@@ -180,9 +217,33 @@ make test
 
 # Run tests with coverage
 make test-coverage
+```
 
-# Quick tests (no integration)
-make test-quick
+### 🛠️ Available Make Targets
+
+```bash
+# Development
+make install           # Install dependencies  
+make format           # Format code with black and isort
+make lint             # Run type checking with mypy
+make clean            # Clean up temporary files
+
+# Running
+make run              # Run the CLI tool
+make example          # Run with example OpenAPI spec
+
+# Testing
+make test             # Run all tests
+make test-coverage    # Run tests with coverage report
+
+# Docker
+make docker-build     # Build Docker image
+make docker-run       # Run Docker container
+make docker-run-example # Run Docker container with example
+
+# Utilities
+make run-inspector    # Run MCP inspector
+make help             # Show all available targets
 ```
 
 ### 🎨 Code Quality
@@ -193,15 +254,12 @@ make format
 
 # Type checking
 make lint
-
-# Install pre-commit hooks
-pre-commit install
 ```
 
 ### 📁 Project Structure
 
 ```
-src/openapi_mcp_generator/
+src/openapi_mcp_gen/
 ├── __init__.py          # Package initialization
 ├── cli.py              # CLI interface with authentication options
 ├── server.py           # FastMCP server creation and management
@@ -210,8 +268,9 @@ src/openapi_mcp_generator/
 tests/
 ├── test_auth.py        # Authentication handler tests (12 tests)
 ├── test_cli.py         # CLI functionality tests (14 tests)
-├── test_server.py      # Server creation tests (6 tests)
-└── test_integration.py # End-to-end integration tests (6 tests)
+├── test_server.py      # Server creation tests (7 tests)
+├── test_integration.py # End-to-end integration tests (6 tests)
+└── test_openapi_spec_handler.py # OpenAPI spec handler tests (23 tests)
 
 examples/
 ├── openapi.yml         # Open-Meteo weather API example
