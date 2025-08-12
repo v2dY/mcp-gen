@@ -18,7 +18,7 @@ COPY src/ ./src/
 COPY README.md LICENSE ./
 
 # Install the package and dependencies
-RUN uv pip install --system -e .
+RUN uv sync --frozen --no-dev && uv build
 
 # Create a non-root user for security
 RUN useradd --create-home --shell /bin/bash appuser && \
@@ -26,7 +26,7 @@ RUN useradd --create-home --shell /bin/bash appuser && \
 USER appuser
 
 # Set the entry point to the CLI
-ENTRYPOINT ["openapi-to-mcp"]
+ENTRYPOINT ["uv", "run", "openapi-to-mcp"]
 
 # Default command shows help
 CMD ["--help"]

@@ -5,7 +5,7 @@
 DOCKER_IMAGE_NAME ?= openapi-mcp-gen
 DOCKER_TAG ?= latest
 DOCKER_IMAGE = $(DOCKER_IMAGE_NAME):$(DOCKER_TAG)
-
+EXAMPLE_OPTS = --auth-type "api_key" --api-key-name "X-API-Key" --api-key-location "header" --api-key-value "${API_KEY}" --path "https://api.openaq.org/openapi.json" --host 0.0.0.0 --port 8000 --server-name "Example MCP Server" --base-url "https://api.openaq.org"
 .PHONY: run test test-coverage
 # Run targets
 run: 
@@ -14,8 +14,7 @@ run:
 
 example: 
 	@echo "🌟 Running example OpenAPI to MCP conversion..."
-	uv run openapi-to-mcp generate  --auth-type "api_key" --api-key-name "X-API-Key" --api-key-location "header" --api-key-value "${API_KEY}" --path "https://api.openaq.org/openapi.json" --host 0.0.0.0 --port 8000 --server-name "Example MCP Server" --base-url "https://api.openaq.org"
-# Test targets
+	uv run openapi-to-mcp generate  $(EXAMPLE_OPTS)
 test:
 	@echo "🧪 Running all tests..."
 	uv run pytest tests/ -v
@@ -61,7 +60,7 @@ docker-run:
 
 docker-run-example:
 	@echo "🐳 Running Docker example with mounted volume..."
-	docker run --rm -it -v $(PWD):/workspace:ro $(DOCKER_IMAGE) generate --path /workspace/examples/openapi.json --host 0.0.0.0 --port 3000
+	docker run --rm -it -p 8000:8000 -v $(PWD):/workspace:ro $(DOCKER_IMAGE) generate  $(EXAMPLE_OPTS)
 
 help:
 	@echo "📖 Available targets:"
