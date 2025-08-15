@@ -2,9 +2,11 @@
 # Using uv as package manager
 
 # Docker configuration
-DOCKER_IMAGE_NAME ?= openapi-mcp-gen
+DOCKER_IMAGE_NAME ?= ghcr.io/v2dy/mcp-gen
 DOCKER_TAG ?= latest
 DOCKER_IMAGE = $(DOCKER_IMAGE_NAME):$(DOCKER_TAG)
+EXAMPLE_OPTS = --auth-type "api_key" --api-key-name "X-API-Key" --api-key-location "header" --api-key-value "${API_KEY}" --path "https://api.openaq.org/openapi.json" --host 0.0.0.0 --port 8000 --server-name "Example MCP Server" --base-url "https://api.openaq.org"
+KIND_CLUSTER_NAME ?= kagent
 
 .PHONY: run test test-coverage
 # Run targets
@@ -14,7 +16,7 @@ run:
 
 example: 
 	@echo "🌟 Running example OpenAPI to MCP conversion..."
-	uv run openapi-to-mcp generate  --auth-type "api_key" --api-key-name "X-API-Key" --api-key-location "header" --api-key-value "${API_KEY}" --path "https://api.openaq.org/openapi.json" --host 0.0.0.0 --port 8000 --server-name "Example MCP Server" --base-url "https://api.openaq.org"
+	uv run openapi-to-mcp generate $(EXAMPLE_OPTS)
 # Test targets
 test:
 	@echo "🧪 Running all tests..."
@@ -61,7 +63,11 @@ docker-run:
 
 docker-run-example:
 	@echo "🐳 Running Docker example with mounted volume..."
-	docker run --rm -it -v $(PWD):/workspace:ro $(DOCKER_IMAGE) generate --path /workspace/examples/openapi.json --host 0.0.0.0 --port 3000
+	docker run --rm -it -p 8000:8000 -v $(PWD):/workspace:ro $(DOCKER_IMAGE) generate $(EXAMPLE_OPTS)
+
+docker-load-kind:
+	@echo "📦 Loading Docker image into kind cluster..."
+	kind load docker-image $(DOCKER_IMAGE) --name ${KIND_CLUSTER_NAME}
 
 help:
 	@echo "📖 Available targets:"
