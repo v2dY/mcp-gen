@@ -55,7 +55,7 @@ run-inspector:
 # Docker targets
 docker-build:
 	@echo "🐳 Building Docker image $(DOCKER_IMAGE)..."
-	docker build -t $(DOCKER_IMAGE) .
+	docker build --no-cache -t $(DOCKER_IMAGE) .
 
 docker-run:
 	@echo "🐳 Running Docker container $(DOCKER_IMAGE)..."
